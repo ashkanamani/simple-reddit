@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"html/template"
 	"strings"
+	"github.com/ashkanamani/simple-reddit/data"
+	"errors"
 )
 
 type Configuration struct {
@@ -21,7 +23,6 @@ var logger *log.Logger
 
 // Convenience function for printing to stdout
 func print(a ...interface{}) {
-	fmt.Println(a)
 }
 func init() {
 	loadConfig()
@@ -49,22 +50,22 @@ func loadConfig() {
 // Convenience function to redirect to the error message page
 func error_message(writer http.ResponseWriter, request *http.Request, msg string) {
 	url := []string{"/err?msg=", msg}
-	http.Redirect(writer, request, strings.Join(url, ""), 302)
+	http.Redirect(writer, request, strings.Join(url, ""), http.StatusPermanentRedirect)
 }
 
 
 
-// // Checks if the user is logged in and has a session, if not err is not nil
-// func session(writer http.ResponseWriter, request *http.Request) (sess data.Session, err error) {
-// 	cookie, err := request.Cookie("_cookie")
-// 	if err == nil {
-// 		sess = data.Session{Uuid: cookie.Value}
-// 		if ok, _ := sess.Check(); !ok {
-// 			err = errors.New("Invalid session")
-// 		}
-// 	}
-// 	return
-// }
+// Checks if the user is logged in and has a session, if not err is not nil
+func session(writer http.ResponseWriter, request *http.Request) (sess data.Session, err error) {
+	cookie, err := request.Cookie("_cookie")
+	if err == nil {
+		sess = data.Session{Uuid: cookie.Value}
+		if ok, _ := sess.Check(); !ok {
+			err = errors.New("invalid session")
+		}
+	}
+	return
+}
 
 // parse HTML templates
 // pass in a list of file names, and get a template
@@ -86,12 +87,6 @@ func generateHTML(writer http.ResponseWriter, data interface{}, filenames ...str
 
 	templates := template.Must(template.ParseFiles(files...))
 	templates.ExecuteTemplate(writer, "layout", data)
-}
-
-// for logging
-func info(args ...interface{}) {
-	logger.SetPrefix("INFO ")
-	logger.Println(args...)
 }
 
 func danger(args ...interface{}) {
