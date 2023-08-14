@@ -23,6 +23,7 @@ var logger *log.Logger
 
 // Convenience function for printing to stdout
 func print(a ...interface{}) {
+	fmt.Println(a)
 }
 func init() {
 	loadConfig()

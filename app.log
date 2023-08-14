@@ -1,0 +1,2 @@
+ERROR 2023/08/14 15:59:21 utils.go:94: pq: password authentication failed for user "eskan" Cannot create user
+ERROR 2023/08/14 15:59:38 utils.go:94: pq: password authentication failed for user "eskan" Cannot find user
